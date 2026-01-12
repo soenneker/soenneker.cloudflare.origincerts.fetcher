@@ -24,10 +24,12 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
 
     public async ValueTask<List<string>> GetSharedAopThumbprints(CancellationToken cancellationToken = default)
     {
-        HttpClient client = await _httpClientCache.Get(nameof(CloudflareOriginCertFetcher), cancellationToken: cancellationToken).NoSync();
+        HttpClient client = await _httpClientCache.Get(nameof(CloudflareOriginCertFetcher), cancellationToken: cancellationToken)
+                                                  .NoSync();
 
         const string pemUrl = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
-        string pem = await client.GetStringAsync(pemUrl, cancellationToken).NoSync();
+        string pem = await client.GetStringAsync(pemUrl, cancellationToken)
+                                 .NoSync();
         return ParsePemThumbprints(pem);
     }
 
@@ -37,11 +39,13 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
     public static List<string> ParsePemThumbprints(string pem)
     {
         var results = new List<string>();
-        var regex = new Regex("-----BEGIN CERTIFICATE-----(.*?)-----END CERTIFICATE-----", RegexOptions.Singleline);
+        Regex regex = CertRegex.PemCertRegex();
 
         foreach (Match match in regex.Matches(pem))
         {
-            string base64 = match.Groups[1].Value.Replace("\r", "").Replace("\n", "");
+            // Base64 payload inside PEM is line-wrapped; decode helpers often do NOT accept embedded whitespace.
+            string base64 = match.Groups[1]
+                                 .Value.RemoveWhiteSpace();
             byte[] raw = base64.ToBytesFromBase64();
 
             using X509Certificate2 cert = X509CertificateLoader.LoadCertificate(raw);
