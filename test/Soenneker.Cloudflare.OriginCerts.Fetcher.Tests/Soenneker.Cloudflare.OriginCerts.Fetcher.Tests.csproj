@@ -28,7 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Soenneker.Cloudflare.OriginCerts.Fetcher.csproj" />
+        <ProjectReference Include="..\..\src\Soenneker.Cloudflare.OriginCerts.Fetcher\Soenneker.Cloudflare.OriginCerts.Fetcher.csproj" />
     </ItemGroup>
 
     <ItemGroup>
