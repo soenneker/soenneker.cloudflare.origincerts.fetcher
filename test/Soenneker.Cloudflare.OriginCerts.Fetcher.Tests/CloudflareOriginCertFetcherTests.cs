@@ -1,30 +1,29 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AwesomeAssertions;
 using Soenneker.Cloudflare.OriginCerts.Fetcher.Abstract;
-using Soenneker.Facts.Local;
-using Soenneker.Tests.FixturedUnit;
+using Soenneker.Tests.Attributes.Local;
+using Soenneker.Tests.HostedUnit;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace Soenneker.Cloudflare.OriginCerts.Fetcher.Tests;
 
-[Collection("Collection")]
-public sealed class CloudflareOriginCertFetcherTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class CloudflareOriginCertFetcherTests : HostedUnitTest
 {
     private readonly ICloudflareOriginCertFetcher _util;
 
-    public CloudflareOriginCertFetcherTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public CloudflareOriginCertFetcherTests(Host host) : base(host)
     {
         _util = Resolve<ICloudflareOriginCertFetcher>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
     }
 
-    [LocalFact]
+    [LocalOnly]
     public async ValueTask GetSharedAopThumbprints_should_get_thumbprints()
     {
         List<string> result = await _util.GetSharedAopThumbprints(CancellationToken);
