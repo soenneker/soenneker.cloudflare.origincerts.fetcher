@@ -26,7 +26,8 @@ public sealed class CloudflareOriginCertFetcherTests : HostedUnitTest
     [LocalOnly]
     public async ValueTask GetSharedAopThumbprints_should_get_thumbprints()
     {
-        List<string> result = await _util.GetSharedAopThumbprints(CancellationToken);
+        List<string> result = await _util.GetSharedAopThumbprints(System.Threading.CancellationToken.None);
         result.Should().NotBeNullOrEmpty();
     }
 }
+
