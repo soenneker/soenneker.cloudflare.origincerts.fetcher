@@ -16,6 +16,7 @@ namespace Soenneker.Cloudflare.OriginCerts.Fetcher;
 /// <inheritdoc cref="ICloudflareOriginCertFetcher"/>
 public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
 {
+    private const string PemUrl = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
     private readonly IHttpClientCache _httpClientCache;
 
     public CloudflareOriginCertFetcher(IHttpClientCache httpClientCache)
@@ -28,10 +29,18 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
         HttpClient client = await _httpClientCache.Get(nameof(CloudflareOriginCertFetcher), cancellationToken: cancellationToken)
                                                   .NoSync();
 
-        const string pemUrl = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
-        string pem = await client.GetStringAsync(pemUrl, cancellationToken)
+        string pem = await client.GetStringAsync(PemUrl, cancellationToken)
                                  .NoSync();
         return ParsePemThumbprints(pem);
+    }
+
+    public async ValueTask<string> GetSharedAopCertificatePem(CancellationToken cancellationToken = default)
+    {
+        HttpClient client = await _httpClientCache.Get(nameof(CloudflareOriginCertFetcher), cancellationToken: cancellationToken)
+                                                  .NoSync();
+
+        return await client.GetStringAsync(PemUrl, cancellationToken)
+                           .NoSync();
     }
 
     /// <summary>
