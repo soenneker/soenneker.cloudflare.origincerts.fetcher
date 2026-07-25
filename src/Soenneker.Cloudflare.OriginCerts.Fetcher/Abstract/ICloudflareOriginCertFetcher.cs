@@ -10,7 +10,7 @@ namespace Soenneker.Cloudflare.OriginCerts.Fetcher.Abstract;
 public interface ICloudflareOriginCertFetcher
 {
     /// <summary>
-    /// Downloads the Cloudflare shared AOP certificate PEM and returns its thumbprints.
+    /// Downloads the Cloudflare shared AOP certificate PEM and returns its SHA-256 thumbprints.
     /// </summary>
     ValueTask<List<string>> GetSharedAopThumbprints(CancellationToken cancellationToken = default);
 }

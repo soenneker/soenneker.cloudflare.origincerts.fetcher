@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -34,7 +35,7 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
     }
 
     /// <summary>
-    /// Parses one or more PEM certificates and returns SHA1 thumbprints.
+    /// Parses one or more PEM certificates and returns SHA-256 thumbprints.
     /// </summary>
     public static List<string> ParsePemThumbprints(string pem)
     {
@@ -49,7 +50,7 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
             byte[] raw = base64.ToBytesFromBase64();
 
             using X509Certificate2 cert = X509CertificateLoader.LoadCertificate(raw);
-            results.Add(cert.Thumbprint);
+            results.Add(System.Convert.ToHexString(SHA256.HashData(cert.RawData)));
         }
 
         return results;
