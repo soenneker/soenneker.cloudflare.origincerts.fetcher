@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -13,7 +14,6 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Cloudflare.OriginCerts.Fetcher;
 
-/// <inheritdoc cref="ICloudflareOriginCertFetcher"/>
 public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
 {
     private const string PemUrl = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
@@ -61,6 +61,9 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
             using X509Certificate2 cert = X509CertificateLoader.LoadCertificate(raw);
             results.Add(System.Convert.ToHexString(SHA256.HashData(cert.RawData)));
         }
+
+        if (results.Count == 0)
+            throw new InvalidDataException("The response did not contain a PEM certificate.");
 
         return results;
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.IO;
 using AwesomeAssertions;
 using Soenneker.Cloudflare.OriginCerts.Fetcher.Abstract;
 using Soenneker.Tests.Attributes.Local;
@@ -40,6 +41,14 @@ public sealed class CloudflareOriginCertFetcherTests : HostedUnitTest
               .ContainSingle()
               .Which.Should()
               .Be(expected);
+    }
+
+    [Test]
+    public void ParsePemThumbprints_should_reject_non_PEM_content()
+    {
+        Action action = () => CloudflareOriginCertFetcher.ParsePemThumbprints("<html>service unavailable</html>");
+
+        action.Should().Throw<InvalidDataException>();
     }
 
     [LocalOnly]
