@@ -14,6 +14,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Cloudflare.OriginCerts.Fetcher;
 
+/// <inheritdoc cref="ICloudflareOriginCertFetcher" />
 public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
 {
     private const string PemUrl = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
