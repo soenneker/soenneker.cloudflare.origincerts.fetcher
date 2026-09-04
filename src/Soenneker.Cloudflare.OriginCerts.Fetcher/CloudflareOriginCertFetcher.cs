@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -10,6 +9,7 @@ using Soenneker.Cloudflare.OriginCerts.Fetcher.Abstract;
 using Soenneker.Extensions.String;
 using Soenneker.Extensions.Task;
 using Soenneker.Extensions.ValueTask;
+using Soenneker.Hashing.Sha256;
 using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.Cloudflare.OriginCerts.Fetcher;
@@ -17,6 +17,8 @@ namespace Soenneker.Cloudflare.OriginCerts.Fetcher;
 /// <inheritdoc cref="ICloudflareOriginCertFetcher" />
 public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
 {
+    private static readonly Sha256HashingUtil _sha256 = new();
+
     private const string PemUrl = "https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem";
     private readonly IHttpClientCache _httpClientCache;
 
@@ -60,7 +62,7 @@ public sealed class CloudflareOriginCertFetcher : ICloudflareOriginCertFetcher
             byte[] raw = base64.ToBytesFromBase64();
 
             using X509Certificate2 cert = X509CertificateLoader.LoadCertificate(raw);
-            results.Add(System.Convert.ToHexString(SHA256.HashData(cert.RawData)));
+            results.Add(System.Convert.ToHexString(_sha256.Hash(cert.RawData)));
         }
 
         if (results.Count == 0)

@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using AwesomeAssertions;
 using Soenneker.Cloudflare.OriginCerts.Fetcher.Abstract;
+using Soenneker.Hashing.Sha256;
 using Soenneker.Tests.Attributes.Local;
 using Soenneker.Tests.HostedUnit;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Soenneker.Cloudflare.OriginCerts.Fetcher.Tests;
 [ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
 public sealed class CloudflareOriginCertFetcherTests : HostedUnitTest
 {
+    private static readonly Sha256HashingUtil _sha256 = new();
+
     private readonly ICloudflareOriginCertFetcher _util;
 
     public CloudflareOriginCertFetcherTests(Host host) : base(host)
@@ -33,7 +36,7 @@ public sealed class CloudflareOriginCertFetcherTests : HostedUnitTest
         using RSA rsa = RSA.Create(2048);
         var request = new CertificateRequest("CN=Test", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         using X509Certificate2 certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddMinutes(1));
-        string expected = Convert.ToHexString(SHA256.HashData(certificate.RawData));
+        string expected = Convert.ToHexString(_sha256.Hash(certificate.RawData));
 
         List<string> result = CloudflareOriginCertFetcher.ParsePemThumbprints(certificate.ExportCertificatePem());
 
