@@ -45,6 +45,6 @@
 
     <ItemGroup>
         <PackageReference Include="Soenneker.Hashing.Sha256" Version="4.0.4" />
-        <PackageReference Include="Soenneker.Utils.HttpClientCache" Version="4.0.2074" />
+        <PackageReference Include="Soenneker.Utils.HttpClientCache" Version="4.0.2076" />
     </ItemGroup>
 </Project>
